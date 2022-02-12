@@ -45,6 +45,7 @@ impl Contract {
         }
 
         // Correct solution has been gueeseed, transfer the prize
+        self.total_prize_amount = 0;
         Promise::new(env::predecessor_account_id()).transfer(self.total_prize_amount);
     }
 
@@ -125,7 +126,8 @@ mod tests {
     #[should_panic(expected = "Wrong solution")]
     fn test_guess_solution_failure_due_to_wrong_solution() {
         let alice = AccountId::new_unchecked("alice".to_string());
-        let context = get_context(alice.clone());
+        let mut context = get_context(alice.clone());
+        context.attached_deposit(6_000_000_000_000_000_000_000_000);
         
         testing_env!(context.build());
         let mut contract = Contract::new(
@@ -138,7 +140,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn test_guess_solution_success() {
         let alice = AccountId::new_unchecked("alice".to_string());
         let mut context = get_context(alice.clone());
@@ -151,9 +152,7 @@ mod tests {
             hex::encode(env::sha256("Paris".as_bytes())),
         );
 
-        contract.guess_solution("London".to_string());
-        contract.guess_solution("New Delhi".to_string());
-        // contract.guess_solution("Paris".to_string());
-        context.account_locked_balance(12_000_000_000_000_000_000_000_000);
+        contract.guess_solution("Paris".to_string());
+        assert_eq!(contract.get_ammount_prize(), 0); // prize is transferred to the caller
     }
 }

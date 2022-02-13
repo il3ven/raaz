@@ -1,2 +1,4 @@
 contract/target
 node_modules
+.parcel-cache
+dist

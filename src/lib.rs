@@ -4,7 +4,7 @@ use near_sdk::{AccountId, PanicOnDefault, Promise};
 
 const MIN_STAKE: u128 = 5_000_000_000_000_000_000_000_000;
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(BorshDeserialize, BorshSerialize, Debug)]
 pub struct Puzzle {
     question: String,
     solution: String, // Solution is stored as SHA256 hash
@@ -64,8 +64,8 @@ impl Contract {
         self.total_prize_amount
     }
 
-    pub fn get_puzzle(&self) -> String {
-        self.puzzle.question.clone()
+    pub fn get_puzzle(&self) -> Puzzle {
+        Puzzle { question: self.puzzle.question.clone(), solution: self.puzzle.solution.clone() }
     }
 }
 
@@ -102,7 +102,7 @@ mod tests {
             "What is the capital of France?".to_string(),
             hex::encode(env::sha256("Paris".as_bytes())),
         );
-        assert_eq!(contract.get_puzzle(), "What is the capital of France?");
+        assert_eq!(format!("{:?}", contract.get_puzzle()), "Puzzle { question: \"What is the capital of France?\", solution: \"5dd272b4f316b776a7b8e3d0894b37e1e42be3d5d3b204b8a5836cc50597a6b1\" }");
         assert_eq!(contract.total_prize_amount, 0);
     }
 

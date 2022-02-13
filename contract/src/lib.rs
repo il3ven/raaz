@@ -2,7 +2,7 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, near_bindgen};
 use near_sdk::{AccountId, PanicOnDefault, Promise, serde::{Deserialize, Serialize}};
 
-const MIN_STAKE: u128 = 5_000_000_000_000_000_000_000_000;
+const MIN_STAKE: u128 = 5;
 
 #[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize,Debug)]
 #[serde(crate = "near_sdk::serde")]

@@ -32,7 +32,7 @@ impl Contract {
     }
 
     #[payable]
-    pub fn guess_solution(&mut self, guess: String) {
+    pub fn guess_solution(&mut self, guess: String) -> bool {
         if env::attached_deposit() < MIN_STAKE {
             env::panic_str("Inssuficient deposit");
         }
@@ -40,14 +40,20 @@ impl Contract {
         let hashed_guess = env::sha256(guess.as_bytes());
         let hashed_guess_hex = hex::encode(&hashed_guess);
         
+        self.total_prize_amount += env::attached_deposit();
+
         if self.puzzle.solution != hashed_guess_hex {
-            self.total_prize_amount += env::attached_deposit();
-            env::panic_str("Wrong solution");
+            return false
         }
 
         // Correct solution has been gueeseed, transfer the prize
-        self.total_prize_amount = 0;
         Promise::new(env::predecessor_account_id()).transfer(self.total_prize_amount);
+
+        // Reset the puzzle
+        self.total_prize_amount = 0;
+        self.puzzle.solution = "".to_string();
+        self.puzzle.question = "".to_string();
+        true
     }
 
     pub fn change_puzzle(&mut self, question: String, solution_hash: String) {
@@ -124,7 +130,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Wrong solution")]
     fn test_guess_solution_failure_due_to_wrong_solution() {
         let alice = AccountId::new_unchecked("alice".to_string());
         let mut context = get_context(alice.clone());
@@ -137,7 +142,7 @@ mod tests {
             hex::encode(env::sha256("Paris".as_bytes())),
         );
 
-        contract.guess_solution("London".to_string());
+        assert_eq!(contract.guess_solution("London".to_string()), false);
     }
 
     #[test]

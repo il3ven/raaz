@@ -1,0 +1,220 @@
+html {
+  font-size: 62.5%;
+  background-color: #000;
+}
+
+body {
+  color: #fff;
+  font-family: "VT323", monospace;
+  font-size: 3rem;
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem 2rem;
+}
+
+.h1,
+h2 {
+  font-family: "VT323", monospace;
+}
+
+.h1 {
+  color: #eded25;
+  text-align: center;
+  font-size: 10rem;
+  margin-top: 2rem;
+}
+
+.h2 {
+  font-size: 3rem;
+}
+
+.p {
+  margin: 2rem 0;
+}
+
+.main {
+  margin-top: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  --start-grad: #fff;
+  --end-grad: rgba(255, 255, 255, 0);
+  --grad: var(--start-grad) 0%, 40%, var(--end-grad) 100%;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 1rem;
+  background-color: transparent;
+  border: 3px solid #fff;
+  border-radius: 0.8rem;
+  /* border-image: linear-gradient(to right, var(--grad));
+  border-image-slice: 1; */
+  color: #fff;
+  font-family: inherit;
+  font-size: 2.5rem;
+  padding: 2.1rem 1rem;
+  transition: all 0.2s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+@keyframes border {
+  0% {
+    border-image: linear-gradient(to right, var(--grad));
+    border-image-slice: 1;
+  }
+  25% {
+    border-image: linear-gradient(to top, var(--grad));
+    border-image-slice: 1;
+  }
+  50% {
+    border-image: linear-gradient(to left, var(--grad));
+    border-image-slice: 1;
+  }
+  75% {
+    border-image: linear-gradient(to bottom, var(--grad));
+    border-image-slice: 1;
+  }
+  100% {
+    border-image: linear-gradient(to right, var(--grad));
+    border-image-slice: 1;
+  }
+}
+
+.input:focus {
+  border: 3px solid #eded25;
+  outline: none;
+  background-color: #eded25;
+  color: #000;
+}
+
+input:focus::placeholder {
+  color: rgba(0, 0, 0, 0.666);
+}
+
+.button {
+  margin-top: 2rem;
+  outline: none;
+  background-color: transparent;
+  border: 3px solid #fff;
+  border-radius: 0.8rem;
+  font-family: inherit;
+  font-size: 2.5rem;
+  color: #fff;
+  transition: all 0.2s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  padding: 1rem 1rem;
+}
+
+.button:hover {
+  background-color: #eded25;
+  color: #000;
+  border: 2px solid #eded25;
+}
+
+.wrong {
+  animation: bounce 0.8s ease-in-out;
+}
+
+.wrong::placeholder {
+  color: rgba(255, 255, 255, 0.666);
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateX(0);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  37% {
+    transform: translateX(-5px);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  55% {
+    transform: translateX(-5px);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  73% {
+    transform: translateX(4px);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  82% {
+    transform: translateX(-4px);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  91% {
+    transform: translateX(2px);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  96% {
+    transform: translateX(-2px);
+    color: #fff;
+    background-color: #cf3232;
+    border: 3px solid #cf3232;
+  }
+  100% {
+    color: initial;
+    transform: translateX(0);
+    background-color: initial;
+    border: 3px solid initial;
+  }
+}
+
+.stars,
+.twinkling,
+.clouds {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+@keyframes move-twink-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -10000px 5000px;
+  }
+}
+
+@keyframes move-clouds-back {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 10000px 0;
+  }
+}
+
+.stars {
+  background: #000 url(../public/stars.png) repeat top center;
+  z-index: -1;
+}
+
+.twinkling {
+  background: transparent url(../public/twinkling.png) repeat top center;
+  z-index: -1;
+  animation: move-twink-back 300s linear infinite;
+}
+
+.clouds {
+  background: transparent url(../public/clouds.png) repeat top center;
+  z-index: -1;
+  opacity: 0.4;
+  animation: move-clouds-back 400s linear infinite;
+}

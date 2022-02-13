@@ -23,12 +23,16 @@ async function viewMethodOnContract(nearConfig, method, params) {
   );
 }
 
+const sanitizeInput = (input) => {
+  return input.toLowerCase().trim();
+};
+
 function App({ question }) {
   const [wallet, setWallet] = useState(null);
   const [contract, setContract] = useState(null);
   const [puzzle, setPuzzle] = useState({ question: "", solution: "" });
   const [prize, setPrize] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [answer, setAnswer] = useState(null);
   const [isWrongAnswer, setIsWrongAnswer] = useState(false);
 
   const logIn = async () => {
@@ -43,15 +47,28 @@ function App({ question }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    const solution = sha256(answer);
+    const guess = sha256(sanitizeInput(answer));
 
-    if (solution !== puzzle.solution) {
-      setIsWrongAnswer(true);
-      setTimeout(() => setIsWrongAnswer(false), 800);
-      return;
-    }
+    // if (guess !== puzzle.solution) {
+    //   setIsWrongAnswer(true);
+    //   setTimeout(() => setIsWrongAnswer(false), 800);
+    //   return;
+    // }
 
-    // contract.guess_solution()
+    const nearConfig = getConfig(process.env.NEAR_ENV || "testnet");
+
+    const res = await wallet.account().functionCall({
+      contractId: nearConfig.contractName,
+      methodName: "guess_solution",
+      args: { guess: sanitizeInput(answer) },
+      attachedDeposit: 6,
+      walletMeta: "", // optional param, by the way
+      walletCallbackUrl: encodeURI("http://localhost:3000?status=error"), // optional param, by the way
+    });
+
+    // why can't we reach here? a new URL opens for the transaction
+
+    console.log(res);
   };
 
   useEffect(() => {
@@ -84,7 +101,7 @@ function App({ question }) {
     init();
   }, []);
 
-  // console.log("wallet", wallet);
+  // console.log("solution", puzzle.solution);
 
   const isLoggedIn = wallet?.isSignedIn();
 
@@ -100,27 +117,33 @@ function App({ question }) {
         else's deposit is yours.
       </h2>
       <main className={css.main}>
-        <p className={css.p}>{puzzle.question}</p>
-        <form onSubmit={submit}>
-          <input
-            type="text"
-            className={css.input + " " + (isWrongAnswer ? css.wrong : "")}
-            placeholder={
-              isLoggedIn ? "Type here..." : "Log in first to answer..."
-            }
-            disabled={!isLoggedIn}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-          />
-        </form>
-        {isLoggedIn ? (
-          <button className={css.button} onClick={submit}>
-            Submit
-          </button>
+        {puzzle.question ? (
+          <>
+            <p className={css.p}>{puzzle.question}</p>
+            <form onSubmit={submit}>
+              <input
+                type="text"
+                className={css.input + " " + (isWrongAnswer ? css.wrong : "")}
+                placeholder={
+                  isLoggedIn ? "Type here..." : "Log in first to answer..."
+                }
+                disabled={!isLoggedIn}
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+              />
+            </form>
+            {isLoggedIn ? (
+              <button className={css.button} onClick={submit}>
+                Submit {prize > 0 ? `to win ${prize} yoctoNear` : "to be the first"}
+              </button>
+            ) : (
+              <button className={css.button} onClick={logIn}>
+                Log in
+              </button>
+            )}
+          </>
         ) : (
-          <button className={css.button} onClick={logIn}>
-            Log in
-          </button>
+          <p className={css.p}>Check again later for a new puzzle</p>
         )}
       </main>
     </>

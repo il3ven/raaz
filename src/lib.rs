@@ -1,10 +1,11 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, near_bindgen};
-use near_sdk::{AccountId, PanicOnDefault, Promise};
+use near_sdk::{AccountId, PanicOnDefault, Promise, serde::{Deserialize, Serialize}};
 
 const MIN_STAKE: u128 = 5_000_000_000_000_000_000_000_000;
 
-#[derive(BorshDeserialize, BorshSerialize, Debug)]
+#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize,Debug)]
+#[serde(crate = "near_sdk::serde")]
 pub struct Puzzle {
     question: String,
     solution: String, // Solution is stored as SHA256 hash
